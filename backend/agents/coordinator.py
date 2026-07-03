@@ -1,12 +1,15 @@
 from google import genai
-from google.genai.types import HttpOptions
 from pydantic import BaseModel
 from typing import List, Optional
 
 # Initialize GenAI Client for Agent Platform
-# The SDK automatically detects your Google Cloud environment via ADC (gcloud auth)
 try:
-    client = genai.Client(http_options=HttpOptions(api_version="v1"))
+    # Use standard vertexai=True initialization for the 0.2.0 SDK version
+    client = genai.Client(
+        vertexai=True, 
+        project="auralearn-backend", 
+        location="us-central1"
+    )
 except Exception as e:
     print(f"Agent Platform not authenticated: {e}")
     client = None
