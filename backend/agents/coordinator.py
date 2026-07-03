@@ -6,7 +6,11 @@ from typing import List, Optional
 # Initialize GenAI Client for Vertex AI
 # This uses Google Cloud Vertex AI for enterprise-grade deployment.
 try:
-    client = genai.Client(vertexai=True, location="us-central1")
+    client = genai.Client(
+        vertexai=True, 
+        project="auralearn-backend", 
+        location="us-central1"
+    )
 except Exception as e:
     print(f"Vertex AI not authenticated: {e}")
     client = None
@@ -42,8 +46,9 @@ class CuratorAgent:
         
         # We use the Vertex AI client if authenticated.
         if client:
+            # Using the latest Gemini model as requested
             response = client.models.generate_content(
-                model='gemini-2.5-pro',
+                model='gemini-3.1-pro',
                 contents=prompt,
             )
             summary = response.text
