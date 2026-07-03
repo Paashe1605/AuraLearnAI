@@ -66,6 +66,10 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    document.documentElement.className = theme;
+  }, [theme]);
+
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   // Trigger UI Translation when language changes
@@ -136,7 +140,7 @@ function App() {
   }
 
   return (
-    <div className={`min-h-screen ${theme}`}>
+    <div className="min-h-screen">
       {/* Animated Background Blobs */}
       <div className="blob-container">
         <div className="blob blob-1"></div>
