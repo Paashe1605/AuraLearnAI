@@ -42,6 +42,15 @@ async def learn(request: LearnRequest):
     result = coordinator.process_learning_request(request.topic, request.language)
     return result.dict()
 
+class TranslateRequest(BaseModel):
+    language: str
+    ui_payload: dict
+
+@app.post("/api/translate-ui")
+async def translate_ui(request: TranslateRequest):
+    result = coordinator.translate_ui(request.language, request.ui_payload)
+    return result.dict()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

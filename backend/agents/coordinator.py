@@ -124,4 +124,26 @@ class AgentCoordinator:
             message="Workflow completed successfully."
         )
 
+    def translate_ui(self, target_language: str, ui_payload: dict) -> AgentResponse:
+        import json
+        if not client:
+            # Fallback to English if not authenticated
+            return AgentResponse(success=True, data=ui_payload, message="Fallback to English.")
+            
+        prompt = f"""
+        Translate the following JSON UI strings into {target_language}. 
+        Return ONLY valid JSON with the exact same keys. Do not include markdown blocks like ```json.
+        
+        {json.dumps(ui_payload)}
+        """
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash', # Use flash for fast UI translations
+                contents=prompt,
+            )
+            translated_dict = json.loads(response.text.strip("```json").strip("```").strip())
+            return AgentResponse(success=True, data=translated_dict, message="UI Translated")
+        except Exception as e:
+            return AgentResponse(success=False, data={}, message=str(e))
+
 coordinator = AgentCoordinator()
