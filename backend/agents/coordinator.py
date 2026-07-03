@@ -3,8 +3,13 @@ from google import genai
 from pydantic import BaseModel
 from typing import List, Optional
 
-# Initialize GenAI Client
-client = genai.Client()
+# Initialize GenAI Client for Vertex AI
+# This uses Google Cloud Vertex AI for enterprise-grade deployment.
+try:
+    client = genai.Client(vertexai=True, location="us-central1")
+except Exception as e:
+    print(f"Vertex AI not authenticated: {e}")
+    client = None
 
 class AgentResponse(BaseModel):
     success: bool
@@ -35,8 +40,8 @@ class CuratorAgent:
         
         prompt = f"Summarize the educational content for video {video_id} into Why, What, and Who."
         
-        # If API key is set, we can call Gemini. For safety, we mock if not set.
-        if os.getenv("GEMINI_API_KEY"):
+        # We use the Vertex AI client if authenticated.
+        if client:
             response = client.models.generate_content(
                 model='gemini-2.5-pro',
                 contents=prompt,
