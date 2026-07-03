@@ -1,18 +1,14 @@
-import os
 from google import genai
+from google.genai.types import HttpOptions
 from pydantic import BaseModel
 from typing import List, Optional
 
-# Initialize GenAI Client for Vertex AI
-# This uses Google Cloud Vertex AI for enterprise-grade deployment.
+# Initialize GenAI Client for Agent Platform
+# The SDK automatically detects your Google Cloud environment via ADC (gcloud auth)
 try:
-    client = genai.Client(
-        vertexai=True, 
-        project="auralearn-backend", 
-        location="us-central1"
-    )
+    client = genai.Client(http_options=HttpOptions(api_version="v1"))
 except Exception as e:
-    print(f"Vertex AI not authenticated: {e}")
+    print(f"Agent Platform not authenticated: {e}")
     client = None
 
 class AgentResponse(BaseModel):
