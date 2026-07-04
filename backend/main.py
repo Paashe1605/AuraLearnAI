@@ -51,6 +51,32 @@ async def translate_ui(request: TranslateRequest):
     result = coordinator.translate_ui(request.language, request.ui_payload)
     return result.dict()
 
+from fastapi.responses import StreamingResponse
+from gtts import gTTS
+import io
+
+@app.get("/api/audio")
+async def get_audio(text: str, lang: str = "en"):
+    # Map common language names to ISO codes if needed
+    lang_map = {
+        "Spanish": "es",
+        "Hindi (India)": "hi",
+        "French": "fr",
+        "German": "de",
+        "Japanese": "ja",
+        "English": "en"
+    }
+    lang_code = lang_map.get(lang, "en")
+    
+    try:
+        tts = gTTS(text=text, lang=lang_code)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        fp.seek(0)
+        return StreamingResponse(fp, media_type="audio/mpeg")
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
