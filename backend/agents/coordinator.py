@@ -61,6 +61,7 @@ class Coordinator:
         
         You must also generate a descriptive prompt for an AI Image Generator that visually represents the core concept of '{topic}'.
         You must also generate a Mermaid.js diagram code explaining the topic structurally.
+        You must also find 3 highly authentic, beneficial, and free (if possible) online certifications or courses related to '{topic}'. One for Beginner, one for Intermediate, and one for Expert level. If none exist, return an empty array.
         
         After gathering all info, output a JSON object exactly matching this schema (DO NOT WRAP IN MARKDOWN, just raw JSON):
         {{
@@ -72,7 +73,15 @@ class Coordinator:
             "translated_topic": "The user's query '{topic}' translated into {language}.",
             "audio_script": "A short, highly engaging, and conversational audio script summarizing {topic} specifically designed to be read aloud as a podcast/voiceover in {language}.",
             "image_prompt": "A descriptive prompt for generating an AI image for {topic}.",
-            "mermaid_diagram": "valid mermaid.js code block for a diagram explaining {topic}"
+            "mermaid_diagram": "valid mermaid.js code block for a diagram explaining {topic}",
+            "certifications": [
+                {{
+                    "level": "Beginner",
+                    "title": "Name of Certification/Course",
+                    "provider": "Provider Name (e.g. Coursera, Google, IBM)",
+                    "url": "URL to the course"
+                }}
+            ]
         }}
         """
 
@@ -126,7 +135,8 @@ class Coordinator:
                     "translated_topic": data.get("translated_topic", topic),
                     "audio_script": data.get("audio_script", data.get("summary", "Summary not generated.")),
                     "mermaid_diagram": data.get("mermaid_diagram", ""),
-                    "image_url": image_url
+                    "image_url": image_url,
+                    "certifications": data.get("certifications", [])
                 },
                 message="Workflow completed successfully."
             )

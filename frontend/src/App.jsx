@@ -3,6 +3,8 @@ import mermaid from 'mermaid'
 import ReactMarkdown from 'react-markdown'
 
 // Default English UI Strings
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+
 const defaultUI = {
   headerTitle: "AuraLearn.",
   heroTitle: "Break the barrier of \nknowledge.",
@@ -10,16 +12,16 @@ const defaultUI = {
   searchPlaceholder: "What do you want to learn today? (e.g. Agentic AI)",
   searchButton: "Vibe Learn",
   workingButton: "Agents Working...",
-  originalSource: "Curated Video Paths",
+  originalSource: "Best Agent Picked YouTube Videos",
   watchOnYoutube: "Watch on YouTube",
   agentSummary: "Agent Summary & Insights",
-  playAudio: "Play Audio",
+  playAudio: "Listen Audio Summary",
   pauseAudio: "Pause Audio",
   diveDeeper: "Want to dive deeper?",
-  diveDeeperSub: "AuraLearn curates the absolute best videos and extracts the core insights for you. But learning doesn't stop here. By exporting this exact curation to Google NotebookLM, you can instantly turn these insights into personalized study guides, interactive podcasts, and quizzes to test your knowledge.",
-  exportNotebookLM: "Export to NotebookLM"
+  exportNotebookLM: "Export Content"
 };
 
+// SVG Icons
 const YoutubeLogo = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style={{ color: '#ff0000' }}>
     <path d="M21.582,6.186c-0.23-0.86-0.908-1.538-1.768-1.768C18.254,4,12,4,12,4S5.746,4,4.186,4.418c-0.86,0.23-1.538,0.908-1.768,1.768C2,7.746,2,12,2,12s0,4.254,0.418,5.814c0.23,0.86,0.908,1.538,1.768,1.768C5.746,20,12,20,12,20s6.254,0,7.814-0.418c0.86-0.23,1.538-0.908,1.768-1.768C22,16.254,22,12,22,12S22,7.746,21.582,6.186z M10,15.464V8.536L16,12L10,15.464z"/>
@@ -42,15 +44,15 @@ const PauseIcon = () => (
 );
 
 const NotebookLMIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#8b5cf6'}}>
     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
     <polyline points="10 2 10 13 7 16 10 16 2"></polyline>
   </svg>
 );
 
-const GeminiIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#4285f4' }}>
+const GeminiIcon = ({ className, style }) => (
+  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#4285f4', ...style }}>
     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
   </svg>
 );
@@ -78,6 +80,77 @@ const GlobeIcon = () => (
   </svg>
 );
 
+const SunIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#facc15'}}>
+    <circle cx="12" cy="12" r="5"></circle>
+    <line x1="12" y1="1" x2="12" y2="3"></line>
+    <line x1="12" y1="21" x2="12" y2="23"></line>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+    <line x1="1" y1="12" x2="3" y2="12"></line>
+    <line x1="21" y1="12" x2="23" y2="12"></line>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#93c5fd'}}>
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
+);
+
+const CloudIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{color: '#4285f4'}}>
+    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+  </svg>
+);
+
+const KaggleIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{color: '#20BEFF'}}>
+    <path d="M5 2h4v20H5V2z"/><path d="m20.5 24-8.8-9.8L19.5 2h-5l-5.6 9.3v3L15.3 24h5.2z"/>
+  </svg>
+);
+
+const InfinityIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{color: '#fbbf24'}}>
+    <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 1 0 0-8c-2 0-4 1.33-6 4Z"/>
+  </svg>
+);
+
+const CodeIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{color: '#10b981'}}>
+    <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+  </svg>
+);
+
+const CopyIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#22c55e'}}>
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+);
+
+const AwardIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{color: '#fbbf24'}}>
+    <circle cx="12" cy="8" r="7"></circle>
+    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+  </svg>
+);
+
+const DNAIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{color: '#f43f5e'}}>
+    <path d="M2 15c6.667-6 13.333 0 20-6M2 9c6.667 6 13.333 0 20 6"/>
+    <path d="M5.5 11.5v1M9.5 9v6M14.5 9v6M18.5 11.5v1"/>
+  </svg>
+);
+
 const FloatingLogos = () => (
   <div className="floating-logos-container">
     <div className="floating-logo" style={{ left: '10%', animationDuration: '28s', animationDelay: '0s' }}><GeminiIcon /></div>
@@ -86,6 +159,11 @@ const FloatingLogos = () => (
     <div className="floating-logo" style={{ left: '70%', animationDuration: '30s', animationDelay: '-15s' }}><BrainIcon /></div>
     <div className="floating-logo" style={{ left: '90%', animationDuration: '22s', animationDelay: '-2s' }}><AtomIcon /></div>
     <div className="floating-logo" style={{ left: '20%', animationDuration: '32s', animationDelay: '-20s' }}><GlobeIcon /></div>
+    <div className="floating-logo" style={{ left: '80%', animationDuration: '26s', animationDelay: '-8s' }}><CloudIcon /></div>
+    <div className="floating-logo" style={{ left: '40%', animationDuration: '34s', animationDelay: '-18s' }}><KaggleIcon /></div>
+    <div className="floating-logo" style={{ left: '15%', animationDuration: '29s', animationDelay: '-12s' }}><InfinityIcon /></div>
+    <div className="floating-logo" style={{ left: '60%', animationDuration: '27s', animationDelay: '-7s' }}><CodeIcon /></div>
+    <div className="floating-logo" style={{ left: '85%', animationDuration: '31s', animationDelay: '-22s' }}><DNAIcon /></div>
   </div>
 );
 
@@ -101,10 +179,14 @@ function App() {
   
   // Audio state
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const [audioLoading, setAudioLoading] = useState(false);
   const audioRef = useRef(null);
   
   // Diagram state
   const [isDiagramExpanded, setIsDiagramExpanded] = useState(false);
+  
+  // Copy state
+  const [copiedGems, setCopiedGems] = useState(false);
   
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef(null);
@@ -152,7 +234,7 @@ function App() {
     const translateUI = async () => {
       setTranslatingUI(true);
       try {
-        const response = await fetch('http://localhost:8000/api/translate-ui', {
+        const response = await fetch(`${API_BASE_URL}/api/translate-ui`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ language, ui_payload: defaultUI })
@@ -211,7 +293,7 @@ function App() {
     }
     
     try {
-      const response = await fetch('http://localhost:8000/api/learn', {
+      const response = await fetch(`${API_BASE_URL}/api/learn`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, language })
@@ -247,10 +329,17 @@ function App() {
     }
     
     if (!audioRef.current) {
-        const audioUrl = `http://localhost:8000/api/audio?text=${encodeURIComponent(result.audio_script)}&lang=${encodeURIComponent(language)}`;
+        setAudioLoading(true);
+        const audioUrl = `${API_BASE_URL}/api/audio?text=${encodeURIComponent(result.audio_script)}&lang=${encodeURIComponent(language)}`;
         audioRef.current = new Audio(audioUrl);
         audioRef.current.onended = () => setAudioPlaying(false);
-        audioRef.current.onerror = () => setAudioPlaying(false);
+        audioRef.current.onerror = () => {
+            setAudioPlaying(false);
+            setAudioLoading(false);
+        };
+        audioRef.current.oncanplaythrough = () => {
+            setAudioLoading(false);
+        };
     }
     
     try {
@@ -259,6 +348,7 @@ function App() {
     } catch (err) {
         console.error("Audio play failed:", err);
         setAudioPlaying(false);
+        setAudioLoading(false);
     }
   };
 
@@ -295,9 +385,22 @@ Generated by AuraLearn Agents
     a.download = `AuraLearn_${topic.replace(/\s+/g, '_')}_StudyGuide.txt`;
     a.click();
     URL.revokeObjectURL(url);
-    
-    // Open NotebookLM in a new tab
-    window.open('https://notebooklm.google.com/', '_blank');
+  };
+  
+  const getGemsPrompt = () => {
+      let videoUrl = "";
+      if (activeTab === 'playlist') {
+          videoUrl = `https://www.youtube.com/playlist?list=${result.playlist?.video_id}`;
+      } else {
+          videoUrl = `https://www.youtube.com/watch?v=${result[`${activeTab}_video`]?.video_id}`;
+      }
+      return `I am learning about "${topic}". I just watched this video: ${videoUrl}\n\nPlease act as my tutor and test my knowledge. Ask me 3 challenging questions about this specific topic to see what I've learned!`;
+  };
+
+  const handleCopyGemsPrompt = () => {
+      navigator.clipboard.writeText(getGemsPrompt());
+      setCopiedGems(true);
+      setTimeout(() => setCopiedGems(false), 2000);
   };
 
   return (
@@ -320,8 +423,9 @@ Generated by AuraLearn Agents
                 <div style={{ animation: 'spin 2s linear infinite' }}><GeminiIcon /></div> Translating UI...
               </div>
             )}
-            <button className="btn glass-panel" onClick={toggleTheme} style={{ color: 'var(--text-primary)' }}>
-              {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+            <button className="btn glass-panel" onClick={toggleTheme} style={{ color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+              {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             </button>
           </div>
         </header>
@@ -380,10 +484,10 @@ Generated by AuraLearn Agents
               </select>
             </div>
 
-            <button className="btn btn-primary" onClick={handleSearch} disabled={loading || translatingUI} style={{ padding: '1rem 2rem', position: 'relative', minWidth: '160px' }}>
+            <button className="btn btn-primary" onClick={handleSearch} disabled={loading || translatingUI} style={{ padding: '1rem 2rem', position: 'relative', minWidth: '160px', overflow: 'hidden' }}>
               {loading ? (
-                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <div style={{ animation: 'spin 1.5s linear infinite', display: 'flex', alignItems: 'center' }}><GeminiIcon /></div> 
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 'bold' }}>
+                  <div className="gemini-loader-icon"><GeminiIcon style={{ color: '#ffffff' }} /></div> 
                   {ui.workingButton || 'Working...'}
                 </span>
               ) : (ui.searchButton || 'Learn')}
@@ -440,6 +544,30 @@ Generated by AuraLearn Agents
                       </a>
                     </div>
                   </div>
+                  
+                  {/* Gemini Gems Section */}
+                  <div style={{ background: 'var(--bg-secondary)', borderRadius: '1rem', padding: '1.5rem', border: '1px solid var(--glass-border)' }}>
+                     <h4 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                       <GeminiIcon /> Test Your Knowledge with Gemini
+                     </h4>
+                     <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+                       Want to check what you've learned from the {activeTab} video? Copy our optimized prompt and ask Gemini directly!
+                     </p>
+                     
+                     <div style={{ background: 'var(--bg-primary)', padding: '1rem', borderRadius: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem', border: '1px solid var(--glass-border)', fontFamily: 'monospace' }}>
+                        {getGemsPrompt()}
+                     </div>
+                     
+                     <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button onClick={handleCopyGemsPrompt} className="btn glass-panel" style={{ flex: 1, padding: '0.75rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                           {copiedGems ? <><CheckIcon /> Copied!</> : <><CopyIcon /> Copy Prompt</>}
+                        </button>
+                        <a href="https://gemini.google.com/" target="_blank" rel="noreferrer" className="btn btn-primary" style={{ flex: 1, textDecoration: 'none', padding: '0.75rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                           Open Gemini ↗
+                        </a>
+                     </div>
+                  </div>
+                  
                 </div>
                 
                 {/* Right Column: Summary & Diagram */}
@@ -447,8 +575,14 @@ Generated by AuraLearn Agents
                   <div>
                     <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', fontWeight: '600' }}>
                       {ui.agentSummary}
-                      <button className="btn glass-panel" onClick={toggleAudio} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
-                        {audioPlaying ? <><PauseIcon /> {ui.pauseAudio || 'Pause'}</> : <><AudioIcon /> {ui.playAudio}</>}
+                      <button className="btn glass-panel" onClick={toggleAudio} disabled={audioLoading} style={{ fontSize: '0.9rem', padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)' }}>
+                        {audioLoading ? (
+                          <><div style={{ animation: 'spin 1s linear infinite', width: '16px', height: '16px', border: '2px solid var(--text-secondary)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%' }}></div> Loading...</>
+                        ) : audioPlaying ? (
+                          <><PauseIcon /> {ui.pauseAudio || 'Pause'}</>
+                        ) : (
+                          <><AudioIcon /> {ui.playAudio}</>
+                        )}
                       </button>
                     </h3>
                     <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'var(--bg-secondary)', border: '1px solid var(--glass-border)' }}>
@@ -457,6 +591,24 @@ Generated by AuraLearn Agents
                       </div>
                     </div>
                   </div>
+
+                  {/* Authentic Certifications */}
+                  {result.certifications && result.certifications.length > 0 && (
+                     <div>
+                       <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                         <AwardIcon /> Authentic Certifications
+                       </h3>
+                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+                         {result.certifications.map((cert, idx) => (
+                           <a key={idx} href={cert.url} target="_blank" rel="noreferrer" className="glass-panel" style={{ padding: '1.25rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', transition: 'all 0.2s' }}>
+                             <span style={{ fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--accent-primary)' }}>{cert.level}</span>
+                             <h4 style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-primary)', lineHeight: '1.3' }}>{cert.title}</h4>
+                             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{cert.provider}</p>
+                           </a>
+                         ))}
+                       </div>
+                     </div>
+                  )}
 
                   {/* Mermaid Diagram */}
                   {result.mermaid_diagram && (
@@ -476,14 +628,33 @@ Generated by AuraLearn Agents
               </div>
 
               {/* NotebookLM Export */}
-              <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '2rem' }}>
-                <div style={{ flex: 1, minWidth: '300px' }}>
-                  <h4 style={{ fontSize: '1.4rem', marginBottom: '0.5rem', fontWeight: '800' }}>{ui.diveDeeper}</h4>
-                  <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1.05rem' }}>{ui.diveDeeperSub}</p>
+              <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
+                <div style={{ flex: 1, minWidth: '350px' }}>
+                  <h4 style={{ fontSize: '1.8rem', marginBottom: '1rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <NotebookLMIcon /> {ui.diveDeeper}
+                  </h4>
+                  <div className="notebook-steps" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                       <span style={{ background: 'var(--accent-primary)', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>1</span>
+                       <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Click <strong>Export Content</strong> to save your curation.</p>
+                     </div>
+                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                       <span style={{ background: 'var(--accent-primary)', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>2</span>
+                       <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Go to <a href="https://notebooklm.google.com" target="_blank" rel="noreferrer" style={{ color: 'var(--accent-primary)' }}>Google NotebookLM</a>.</p>
+                     </div>
+                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                       <span style={{ background: 'var(--accent-primary)', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>3</span>
+                       <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Create a New Notebook and <strong>upload the saved text file</strong>.</p>
+                     </div>
+                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                       <span style={{ background: 'var(--accent-primary)', color: 'white', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>4</span>
+                       <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Instantly generate Podcasts, Study Guides, and Quizzes!</p>
+                     </div>
+                  </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <button onClick={handleExportNotebookLM} className="btn btn-primary" style={{ background: 'var(--accent-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem 2rem', fontSize: '1.1rem' }}>
-                    <NotebookLMIcon /> {ui.exportNotebookLM}
+                  <button onClick={handleExportNotebookLM} className="btn btn-primary" style={{ background: 'var(--accent-secondary)', display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1.25rem 2.5rem', fontSize: '1.2rem', borderRadius: '1.5rem' }}>
+                     {ui.exportNotebookLM}
                   </button>
                 </div>
               </div>
@@ -495,11 +666,11 @@ Generated by AuraLearn Agents
       
       {/* Diagram Fullscreen Modal */}
       {isDiagramExpanded && result && result.mermaid_diagram && (
-        <div className="modal-overlay">
+        <div className="modal-overlay" onClick={(e) => { if (e.target.className === 'modal-overlay') setIsDiagramExpanded(false); }}>
            <div className="modal-content">
              <button className="modal-close" onClick={() => setIsDiagramExpanded(false)}>✕</button>
              <h3 style={{ marginBottom: '1.5rem', fontWeight: '600' }}>Structural Diagram</h3>
-             <div id="mermaid-diagram-fullscreen" className="mermaid" style={{ display: 'flex', justifyContent: 'center' }}>
+             <div id="mermaid-diagram-fullscreen" className="mermaid" style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                 {result.mermaid_diagram.replace(/```mermaid/g, '').replace(/```/g, '')}
              </div>
            </div>
@@ -509,6 +680,13 @@ Generated by AuraLearn Agents
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+        .gemini-loader-icon {
+          animation: spin 1.5s linear infinite;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
         }
       `}} />
     </div>
